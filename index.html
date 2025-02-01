@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Attendance Portal</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 700px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        h2 {
+            color: #007bff;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .loader {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .loader img {
+            width: 50px;
+        }
+
+        #result {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        #chart_div {
+            width: 100%;
+            height: auto;
+            min-height: 400px;
+            margin-top: 20px;
+        }
+
+        #note {
+            font-size: 14px;
+            color: red;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+                padding: 15px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            input {
+                font-size: 14px;
+            }
+
+            button {
+                font-size: 14px;
+            }
+        }
+    </style>
+
+    <script>
+        function fetchStudentData() {
+            var usn = document.getElementById("usn").value.trim();
+            var dob = document.getElementById("dob").value.trim();
+            var loader = document.getElementById("loader");
+            var resultDiv = document.getElementById("result");
+            var chartDiv = document.getElementById("chart_div");
+
+            if (usn === "" || dob === "") {
+                alert("Please enter both USN and Date of Birth.");
+                return;
+            }
+
+            loader.style.display = "block";
+            resultDiv.innerHTML = "";
+            chartDiv.innerHTML = "";
+
+            var webAppUrl = "https://script.google.com/macros/s/AKfycbz-0uUa8NYVuhhy_0wUEkYaZ-2k2Rlp0XR5PBQy6lBZXj1DeYS3hJquwQ0qRqSVWo6-1g/exec"
+                + "?usn=" + encodeURIComponent(usn) + "&dob=" + encodeURIComponent(dob);
+
+            fetch(webAppUrl)
+                .then(response => response.json())
+                .then(data => {
+                    loader.style.display = "none"; // Hide loading
+
+                    if (data.error) {
+                        resultDiv.innerHTML = `<p class='error'>${data.error}</p>`;
+                        return;
+                    }
+
+                    let overallPercentage = data["Overall Precentage "] || data["Overall Precentage"] || "N/A";
+                    overallPercentage = (parseFloat(overallPercentage) * 100).toFixed(2) + "%"; // Convert to percentage
+
+                    resultDiv.innerHTML = `
+                        <h3>Student Details</h3>
+                        <p><b>USN:</b> ${data["USN number"]}</p>
+                        <p><b>Name:</b> ${data["Student Name"]}</p>
+                        <p><b>Overall Percentage:</b> ${overallPercentage}</p>`;
+
+                    var subjects = {
+                        "DS": data["DataStructure"] || 0,
+                        "JAVA": data["JAVA "] || data["JAVA"] || 0,
+                        "OS": data["OperatingSystems"] || 0,
+                        "IC": data["IndianConstitution "] || data["IndianConstitution"] || 0,
+                        "KAN/HIN": data["Kannada"] || 0,
+                        "ENG": data["English"] || 0,
+                        "DS_Lab": data["DS_Lab"] || 0,
+                        "JAVA_Lab": data["JAVA_Lab"] || 0,
+                        "OS_Lab": data["OS_Lab"] || 0
+                    };
+
+                    var dataArray = [["Subject", "Attendance", { role: "style" }]];
+                    var colors = ['#1E88E5', '#43A047', '#F4511E', '#8E24AA', '#FFB300', '#6D4C41', '#00ACC1', '#E53935', '#7CB342'];
+
+                    Object.entries(subjects).forEach(([key, value], index) => {
+                        dataArray.push([key, parseFloat(value) * 100 || 0, colors[index]]);
+                    });
+
+                    google.charts.load('current', { packages: ['corechart', 'bar'] });
+                    google.charts.setOnLoadCallback(function () {
+                        var chartData = google.visualization.arrayToDataTable(dataArray);
+
+                        var options = {
+                            chart: { title: 'Student Attendance' },
+                            bars: 'horizontal', // Keep bars horizontal
+                            height: 500,
+                            legend: { position: 'none' },
+                            hAxis: {
+                                title: "Attendance (%)",
+                                minValue: 0,
+                                maxValue: 100,
+                                gridlines: { color: "#E0E0E0" },
+                                baselineColor: 'red' // 75% threshold line
+                            },
+                            vAxis: {
+                                title: "Subjects",
+                                textStyle: { fontSize: 12, color: "#333" }
+                            },
+                            bar: { groupWidth: '65%' }
+                        };
+
+                        var chart = new google.visualization.BarChart(chartDiv);
+                        chart.draw(chartData, options);
+
+                        document.getElementById('note').classList.remove('hide');
+                    });
+
+                })
+                .catch(error => {
+                    loader.style.display = "none";
+                    resultDiv.innerHTML = "<p class='error'>Error fetching data. Try again.</p>";
+                });
+        }
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Student Attendance Portal</h2>
+        <label for="usn">Enter USN:</label>
+        <input type="text" id="usn" placeholder="e.g., U03NK24S0***" required>
+
+        <label for="dob">Enter Date of Birth (DD-MM-YYYY):</label>
+        <input type="text" id="dob" placeholder="e.g., DD-MM-YYYY" required>
+
+        <button onclick="fetchStudentData()">Submit</button>
+
+        <div class="loader" id="loader">
+            <p>Loading... <br><img src="https://i.gifer.com/ZZ5H.gif"></p>
+        </div>
+
+        <div id="result"></div>
+        <p class="hide" id="note">🔴 <b>75% is the minimum required criteria to appear for the exams.</b></p>
+        <div id="chart_div"></div>
+    </div>
+</body>
+
+</html>
