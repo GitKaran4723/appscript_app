@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bangalore University BCA Sem 2 Timetable</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .interval {
+            background-color: #ffd700;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+                padding: 15px;
+            }
+
+            table, th, td {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Bangalore University BCA Sem 2 Timetable</h2>
+        
+        <label for="day-select">Select a Day:</label>
+        <select id="day-select" onchange="updateTable()">
+            <option value="">--Select a Day--</option>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+        </select>
+
+        <label for="section-select">Select a Section:</label>
+        <select id="section-select" onchange="updateTable()">
+            <option value="">--Select a Section--</option>
+            <option value="A">Section A</option>
+            <option value="B">Section B</option>
+        </select>
+
+        <table id="timetable">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Subject</th>
+                    <th>Faculty</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be inserted dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const timetableData = {
+            "Monday": {
+                "A": [
+                    ["10:00 - 11:00 AM", "Data Structures", "Mr. Karan S J"],
+                    ["11:00 - 12:00 AM", "Operating System", "Ms. Pavithra A V"],
+                    ["12:00 - 12:15 AM", "Interval", "Break"],
+                    ["12:15 - 1:15 PM", "Java", "Mrs. Amthu Hai"],
+                    ["1:15 - 2:00 PM", "Lunch Break", "-"],
+                    ["2:00 - 4:00 PM", "Kannada/Hindi", "Dr. Kumar"],
+                    ["4:00 - 5:00 PM", "Operating system Lab Exp.", "Ms. Pavithra A V"]
+                ],
+                "B": [
+                    ["10:00 - 11:00 AM", "Java", "Mrs. Amthu Hai"],
+                    ["11:00 - 12:00 AM", "English", "Dr. Mandela"],
+                    ["12:00 - 12:15 AM", "Interval", "Break"],                    
+                    ["12:15 - 1:15 PM", "Operating System", "Ms. Pavithra A V"],
+                    ["1:15 - 2:00 PM", "Lunch Break", "—"],
+                    ["2:00 - 4:00 PM", "Kannada/Hindi", "Dr. Shweta"],
+                    ["4:00 - 5:00 PM", "English", "Dr. Mandela"]
+                ]
+            },
+            "Tuesday": {
+                "A": [
+                    ["10:00 - 11:30 AM", "Java Lab", "Mrs. Amthu Hai, Ms. Pavithra A V"],
+                    ["11:30 - 11:45 AM", "Interval", "Break"],
+                    ["11:45 - 1:15 PM", "Operating System Lab", "Ms. Pavithra A V, Mr. Karan S J"],
+                    ["1:15 - 2:00 PM", "Lunch Break", "—"],
+																				["2:00  - 3:30 PM", "Java", "Mrs. Amthu Hai"],
+                    ["3:30 - 5:00 PM", "IC", "—"]
+                ],
+                "B": [
+                    ["10:00 - 11:00 AM", "Data Structures", "Mr. Karan S J"],
+                    ["11:00 - 12:00 PM", "English", "Dr. Mandela"],
+                    ["12:00 - 12:15 AM", "Interval", "Break"],
+                    ["12:15 - 1:15 PM", "Java", "Mrs. Amthu Hai"],
+																				["1:15 - 2:00 PM", "Lunch Break", "—"],
+                    ["2:00 - 3:30 PM", "IC", "—"]
+																				["3:30 - 5:00 PM", "Operating System Lab Exp.", "Ms. Pavithra A V"],
+                ]
+            },
+            "Wednesday": {
+                "A": [
+																				["10:00 - 12:00 PM", "English", "Mrs. Renu"],
+																				["12:15 - 1:15 PM", "Operating System", "Ms. Pavithra A V"],
+																				["1:15 - 2:00 PM", "Lunch Break", "—"],
+																				["2:00 - 3:30 AM", "Data Structures Lab", "Mr. Karan S J, Mrs. Amthu Hai"],
+																				["3:30 - 5:00 PM", "Data Structures Lab Exp.", "Mr. Karan S J"],
+																	],
+	               "B": [
+																				["10:00 - 11:30 AM", "Operating System", "Ms. Pavithra A V"],
+                    ["11:30 - 11:45 AM", "Interval", "Break"],
+																				["11:45 - 1:15 PM", "Java", "Mrs. Amthu Hai"],
+																				["1:15 - 2:00 PM", "Lunch Break", "—"],
+                    ["2:00 - 3:00 PM", "English", "Dr. Mandela"]
+																				["3:30 - 5:00 AM", "JAVA Lab", "Mr. Karan S J, Mrs. Amthu Hai"],
+																	],
+            },
+            "Thursday": {
+                "A": [
+																				["10:00 - 12:00 PM", "English", "Mrs. Renu"],
+                    ["12:00 - 12:15 PM", "Interval", "Break"],
+																				["12:15 - 1:15 PM", "Java", "Mrs. Amthu Hai"],
+																				["1:15 - 2:00 PM", "Lunch Break", "—"],
+																				["2:00 - 3:30 AM", "Data Structures", "Mr. Karan S J"],
+																				["3:30 - 5:00 PM", "JAVA Lab Exp.", "Mrs. Amthu Hai"],
+																	],
+	               "B": [
+																				["10:00 - 11:30 AM", "JAVA Lab", "Mr. Karan S J, Mrs. Amthu Hai"],
+                    ["11:30 - 11:45 AM", "Interval", "Break"],
+																				["11:45 - 1:15 PM", "Data Structures Lab", "Mr. Karan S J, Ms. Pavithra A V"],
+																				["1:15 - 2:00 PM", "Lunch Break", "—"],
+                    ["2:00 - 4:00 PM", "Kannada/Hindi", "Dr. Shweta"]
+																				["4:00 - 5:00 AM", "Data Structures", "Mr. Karan S J"],
+																	],
+            },
+            "Friday": {
+                "A": [
+																				["10:00 - 11:30 PM", "Data Structures", "Mr. Karan S J"],
+                    ["11:30 - 11:45 AM", "Interval", "Break"],
+																				["11:45 - 1:15 PM", "Operating System", "Ms. Pavithra A V"],
+																				["1:15 - 2:00 PM", "Lunch Break", "—"],
+																				["2:00 - 4:00 AM", "Kannada/Hindi", "Dr. Kumar"],
+																				["4:00 - 5:00 PM", "JAVA", "Mrs. Amthu Hai"],
+																	],
+	               "B": [
+																				["10:00 - 11:30 AM", "Operating System", "Ms. Pavithra A V"],
+                    ["11:30 - 11:45 AM", "Interval", "Break"],
+																				["11:45 - 1:15 PM", "Data Structures", "Mr. Karan S J"],
+																				["1:15 - 2:00 PM", "Lunch Break", "—"],
+                    ["2:00 - 3:30: PM", "JAVA", "Mrs. Amthu Hai"]
+																				["4:00 - 5:00 AM", "Data Structures lab exp.", "Mr. Karan S J"],
+
+																	],
+            },
+            "Saturday": {
+                "A": [
+																				["10:00 - 11:30 PM", "CC & EC (PLACEMENT)", "Mr. Karan S J, Ms. Pavithra A V, Mrs. Amthu Hai"],
+                    ["11:30 - 11:45 AM", "Interval", "Break"],
+																				["11:45 - 1:15 PM", "CC & EC (PLACEMENT)", "Mr. Karan S J, Ms. Pavithra A V, Mrs. Amthu Hai"],
+																				["1:15 - 2:00 PM", "Lunch Break", "—"],
+																	],
+	               "B": [
+																				["10:00 - 11:30 PM", "CC & EC (PLACEMENT)", "Mr. Karan S J, Ms. Pavithra A V, Mrs. Amthu Hai"],
+                    ["11:30 - 11:45 AM", "Interval", "Break"],
+																				["11:45 - 1:15 PM", "CC & EC (PLACEMENT)", "Mr. Karan S J, Ms. Pavithra A V, Mrs. Amthu Hai"],
+																				["1:15 - 2:00 PM", "Lunch Break", "—"],
+																	],
+            }
+        };
+
+        function updateTable() {
+            const selectedDay = document.getElementById("day-select").value;
+            const selectedSection = document.getElementById("section-select").value;
+            const tableBody = document.getElementById("timetable").getElementsByTagName("tbody")[0];
+
+            tableBody.innerHTML = "";
+
+            if (selectedDay && selectedSection && timetableData[selectedDay] && timetableData[selectedDay][selectedSection]) {
+                timetableData[selectedDay][selectedSection].forEach(entry => {
+                    let row = tableBody.insertRow();
+                    entry.forEach(text => {
+                        let cell = row.insertCell();
+                        cell.textContent = text;
+                    });
+                });
+            }
+        }
+    </script>
+</body>
+</html>
